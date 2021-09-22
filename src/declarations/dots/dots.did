@@ -26,5 +26,6 @@ type Game =
    metascoreScores: () -> (vec Score) query;
    register: (principal) -> (Result);
    sendNewScores: (vec Score) -> ();
+   unregister: () -> (Result);
  };
 service : () -> Game

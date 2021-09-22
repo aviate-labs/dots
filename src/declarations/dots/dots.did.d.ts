@@ -4,6 +4,7 @@ export interface Game {
   'metascoreScores' : () => Promise<Array<Score>>,
   'register' : (arg_0: Principal) => Promise<Result>,
   'sendNewScores' : (arg_0: Array<Score>) => Promise<undefined>,
+  'unregister' : () => Promise<Result>,
 }
 export interface Metadata {
   'name' : string,

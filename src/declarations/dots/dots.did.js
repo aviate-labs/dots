@@ -16,6 +16,7 @@ export const idlFactory = ({ IDL }) => {
     'metascoreScores' : IDL.Func([], [IDL.Vec(Score)], ['query']),
     'register' : IDL.Func([IDL.Principal], [Result], []),
     'sendNewScores' : IDL.Func([IDL.Vec(Score)], [], []),
+    'unregister' : IDL.Func([], [Result], []),
   });
   return Game;
 };
