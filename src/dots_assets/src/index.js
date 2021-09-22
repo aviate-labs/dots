@@ -23,8 +23,8 @@ const sketch = (p) => {
 
   let numSegments = 10;
   let direction = 'right';
-  const xStart = 0; //starting x coordinate for snake
-  const yStart = 250; //starting y coordinate for snake
+  const xStart = 0;   // Starting x coordinate for snake
+  const yStart = 250; // Starting y coordinate for snake
   const diff = 10;
 
   let xCor = [];
@@ -35,6 +35,26 @@ const sketch = (p) => {
   let score = 0;
 
   let t = 0; // For animation.
+
+  function init() {
+    p.background(0);
+
+    started  = false;
+    gameOver = false;
+
+    numSegments = 10;
+    direction = 'right';
+
+    updateFruitCoordinates();
+    score = 0;
+    scoreElement.innerText = `Score = ${score}`;
+    xCor = [];
+    yCor = [];
+    for (let i = 0; i < numSegments; i++) {
+      xCor.push(xStart + i * diff);
+      yCor.push(yStart);
+    }
+  } 
 
   p.setup = () => {
     const containerPos = sketchContainer.getBoundingClientRect();
@@ -51,10 +71,22 @@ const sketch = (p) => {
       xCor.push(xStart + i * diff);
       yCor.push(yStart);
     }
+
+    p.textAlign(p.CENTER);
+    p.textFont("PT Mono");
   };
 
   p.keyPressed = (keydown) => {
     switch (keydown.keyCode) {
+      case 13:
+        if (!started) {
+          started = true;
+          p.background(0);
+        }
+        if (gameOver) {
+          init();
+        }
+        break;
       case 65:
         if (direction !== 'right') {
           direction = 'left';
@@ -80,12 +112,21 @@ const sketch = (p) => {
 
   p.draw = () => {
     if (!started || gameOver) {
-      p.background(10, 10);
       if (gameOver) {
-        p.stroke(220, 5, 15);
+        p.background(255, 10);
+        p.noStroke();
+        p.fill(255);
+        p.textSize(50);
+        p.text(`Game Over!\nScore = ${score}`, p.width/2, p.height/2);
+        p.stroke(10);
       } else {
-        p.stroke(255, 255, 255);
+        p.background(10, 10);
+        p.stroke(255);
+        p.fill(0);
+        p.textSize(30);
+        p.text("Press 'Enter' to Start", p.width/2, p.height/2);
       }
+      
       for (let x = 0; x <= p.width + 30; x = x + 30) {
         for (let y = 0; y <= p.height + 30; y = y + 30) {
           // starting point of each circle depends on mouse position
@@ -105,7 +146,7 @@ const sketch = (p) => {
       return;
     };
 
-    p.background(0, 80);
+    p.background(0);
     for (let i = 0; i < numSegments - 1; i++) {
       p.line(xCor[i], yCor[i], xCor[i + 1], yCor[i + 1]);
     };
