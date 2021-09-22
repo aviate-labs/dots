@@ -9,9 +9,27 @@ body {
     align-items: center;
 }
 
+p {
+    margin: 0;
+    padding: 5px 10px;
+    font-family: 'PT Mono', monospace;
+    font-size: 1em;
+}
+
 button {
+    padding: 5px 10px;
+    font-family: 'PT Mono', monospace;
+    font-size: 1em;
+
     border: none;
     background-color: transparent;
+    transition-duration: 0.4s;
+    cursor: grabbing;
+}
+
+button:hover {
+    color: black;
+    background-color: white;
 }
 
 #sketch-container {

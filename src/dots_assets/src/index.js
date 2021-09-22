@@ -2,14 +2,20 @@ import { StoicIdentity } from "ic-stoic-identity";
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { idlFactory, canisterId } from "../../declarations/dots";
 
+let stoicIdentity = false;
+let gameActor = null;
+
 document.getElementById("stoic").addEventListener("click", async () => {
   StoicIdentity.load().then(async identity => {
     if (identity !== false) {
       StoicIdentity.disconnect();
-      document.getElementById("stoic").innerText = "Login with Stoic"
+      document.getElementById("stoic").innerText = "Login with Stoic";
+      stoicIdentity = false;
+      gameActor = null;
       return;
     }
     identity = await StoicIdentity.connect();
+    stoicIdentity = identity;
 
     //Create an actor canister
     const actor = Actor.createActor(idlFactory, {
@@ -19,7 +25,7 @@ document.getElementById("stoic").addEventListener("click", async () => {
       canisterId,
     });
 
-    let _ = actor; // TODO
+    gameActor = actor;
 
     document.getElementById("stoic").innerText = identity.getPrincipal().toText();
   })
@@ -29,6 +35,8 @@ const sketchContainer = document.getElementById("sketch-container");
 const scoreElement = document.getElementById("score");
 
 const sketch = (p) => {
+  let gameOver = false;
+
   let numSegments = 10;
   let direction = 'right';
   const xStart = 0; //starting x coordinate for snake
@@ -41,6 +49,11 @@ const sketch = (p) => {
   let xFruit = 0;
   let yFruit = 0;
   let score = 0;
+
+  let t = 0; // For animation.
+  let color = {
+    r: 0, b: 0, g: 0,
+  };
 
   p.setup = () => {
     const containerPos = sketchContainer.getBoundingClientRect();
@@ -61,22 +74,22 @@ const sketch = (p) => {
 
   p.keyPressed = (keydown) => {
     switch (keydown.keyCode) {
-      case 74:
+      case 65:
         if (direction !== 'right') {
           direction = 'left';
         }
         break;
-      case 76:
+      case 68:
         if (direction !== 'left') {
           direction = 'right';
         }
         break;
-      case 73:
+      case 87:
         if (direction !== 'down') {
           direction = 'up';
         }
         break;
-      case 75:
+      case 83:
         if (direction !== 'up') {
           direction = 'down';
         }
@@ -85,6 +98,32 @@ const sketch = (p) => {
   };
 
   p.draw = () => {
+    if (gameOver || gameActor === null || stoicIdentity === false) {
+      p.background(10, 10);
+      if (gameOver) {
+        p.stroke(220, 5, 15);
+      } else {
+        p.stroke(255, 255, 255);
+      }
+      for (let x = 0; x <= p.width + 30; x = x + 30) {
+        for (let y = 0; y <= p.height + 30; y = y + 30) {
+          // starting point of each circle depends on mouse position
+          const xAngle = p.map(0, 0, p.width, -4 * p.PI, 4 * p.PI, true);
+          const yAngle = p.map(0, 0, p.height, -4 * p.PI, 4 * p.PI, true);
+          // and also varies based on the particle's location
+          const angle = xAngle * (x / p.width) + yAngle * (y / p.height);
+
+          // each particle moves in a circle
+          const myX = x + 20 * p.cos(2 * p.PI * t + angle);
+          const myY = y + 20 * p.sin(2 * p.PI * t + angle);
+
+          p.ellipse(myX, myY, 10); // draw particle
+        }
+      }
+      t = t + 0.01;
+      return;
+    };
+
     p.background(0);
     for (let i = 0; i < numSegments - 1; i++) {
       p.line(xCor[i], yCor[i], xCor[i + 1], yCor[i + 1]);
@@ -127,8 +166,8 @@ const sketch = (p) => {
       yCor[yCor.length - 1] < 0 ||
       checkSnakeCollision()
     ) {
-      p.noLoop();
-      scoreElement.innerText = `GAME OVER | Score = ${score}`;
+      p.background(0);
+      gameOver = true;
     }
   }
 
