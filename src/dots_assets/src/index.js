@@ -87,22 +87,22 @@ const sketch = (p) => {
           init();
         }
         break;
-      case 65:
+      case 65, 37:
         if (direction !== 'right') {
           direction = 'left';
         }
         break;
-      case 68:
+      case 68, 39:
         if (direction !== 'left') {
           direction = 'right';
         }
         break;
-      case 87:
+      case 87, 38:
         if (direction !== 'down') {
           direction = 'up';
         }
         break;
-      case 83:
+      case 83, 40:
         if (direction !== 'up') {
           direction = 'down';
         }
