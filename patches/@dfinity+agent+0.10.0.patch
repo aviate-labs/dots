@@ -1,0 +1,13 @@
+diff --git a/node_modules/@dfinity/agent/lib/esm/request_id.js b/node_modules/@dfinity/agent/lib/esm/request_id.js
+index c772c1f..a31624b 100644
+--- a/node_modules/@dfinity/agent/lib/esm/request_id.js
++++ b/node_modules/@dfinity/agent/lib/esm/request_id.js
+@@ -27,7 +27,7 @@ function hashValue(value) {
+         const vals = value.map(hashValue);
+         return hash(concat(...vals));
+     }
+-    else if (value instanceof Principal) {
++    else if (value._isPrincipal) {
+         return hash(value.toUint8Array());
+     }
+     else if (typeof value === 'object' &&

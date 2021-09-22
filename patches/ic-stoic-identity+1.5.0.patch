@@ -1,0 +1,21 @@
+diff --git a/node_modules/ic-stoic-identity/src/index.js b/node_modules/ic-stoic-identity/src/index.js
+index e6d0a3a..05c1b70 100644
+--- a/node_modules/ic-stoic-identity/src/index.js
++++ b/node_modules/ic-stoic-identity/src/index.js
+@@ -84,14 +84,14 @@ export class StoicIdentity extends SignIdentity {
+             content: body,
+           }
+         };
+-        const result = JSON.parse(await this.sign(blobFromUint8Array(Buffer.concat([domainSeparator, requestId]))));
++        const result = JSON.parse(await this.sign(Buffer.from(Buffer.concat([domainSeparator, new Uint8Array(requestId)]))));
+         response.body.sender_sig = hex2buf(result.signed);
+         if (pubkey.getType() == "DelegationIdentity") {
+           var DIC = DelegationChain.fromJSON(result.chain);
+           response.body.sender_pubkey = DIC.publicKey;
+           response.body.sender_delegation = DIC.delegations;
+         } else {
+-          response.body.sender_pubkey = pubkey.toDer();
++          response.body.sender_pubkey = new Uint8Array(Object.values(pubkey.toDer()));
+         }
+         resolve(response);
+       } catch (e) {

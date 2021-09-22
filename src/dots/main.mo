@@ -84,6 +84,7 @@ shared ({caller = owner}) actor class Game(e : Nat32) : async MPublic.GameInterf
         };
         let playerId = #stoic(caller);
         let score = coordinates.size();
+        Debug.print(Principal.toText(caller));
         switch (metascore) {
             case (null)  { #err("contact quint, something went wrong...") };
             case (? mID) {
