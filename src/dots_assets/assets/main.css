@@ -9,6 +9,11 @@ body {
     align-items: flex-start;
 }
 
+h1 {
+    margin: 10px 0;
+    font-family: 'PT Mono', monospace;
+}
+
 a {
     text-decoration: underline;
     color: black;
