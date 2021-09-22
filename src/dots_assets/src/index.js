@@ -1,5 +1,7 @@
 import { StoicIdentity } from "ic-stoic-identity";
-import { createActor, canisterId, dots } from "../../declarations/dots";
+import { Actor, HttpAgent } from '@dfinity/agent';
+import { canisterId, dots } from "../../declarations/dots";
+import { idlFactory } from '../../declarations/dots/dots.did.js';
 
 let stoicIdentity = false;
 let gameActor = dots;
@@ -11,11 +13,25 @@ btn.addEventListener("click", async () => {
       identity = await StoicIdentity.connect();
     }
 
+    const agent = new HttpAgent({ identity });
+
+    // Fetch root key for certificate validation during development
+    if (process.env.NODE_ENV !== "production") {
+      agent.fetchRootKey().catch(err => {
+        console.warn("Unable to fetch root key. Check to ensure that your local replica is running");
+        console.error(err);
+      });
+    }
+
     stoicIdentity = identity;
     btn.innerText = identity.getPrincipal().toText();
     btn.classList.add("btnDisable");
 
-    gameActor = createActor(canisterId, identity);
+    gameActor = Actor.createActor(idlFactory, {
+      agent,
+      canisterId,
+      // ...options?.actorOptions,
+    });
   })
 });
 
@@ -245,6 +261,7 @@ const sketch = (p) => {
 
   async function updateFruitCoordinates() {
     let coords = await gameActor.getFreshCoords().catch(e => {
+      console.error(e);
       errorOccured = true;
       return;
     });
