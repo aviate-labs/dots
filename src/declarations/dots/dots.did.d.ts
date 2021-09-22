@@ -8,7 +8,7 @@ export interface Game {
   'register' : (arg_0: Principal) => Promise<Result>,
   'sendNewScores' : (arg_0: Array<Score>) => Promise<undefined>,
   'submitScores' : (arg_0: Array<Coordinate>) => Promise<Result>,
-  'unregister' : () => Promise<Result>,
+  'unregister' : (arg_0: Principal) => Promise<Result>,
 }
 export interface Metadata {
   'name' : string,

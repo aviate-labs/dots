@@ -118,25 +118,15 @@ shared ({caller = owner}) actor class Game(e : Nat32) : async MPublic.GameInterf
     // dfx canister --network=ic --no-wallet call dots register "(principal \"tzvxm-jqaaa-aaaaj-qabga-cai\")"
     public shared({caller}) func register(metascoreID : Principal) : async Result.Result<(), Text> {
         assert(caller == owner);
+        metascore := ?metascoreID;
         let metascoreCanister : MPublic.MetascoreInterface = actor(Principal.toText(metascoreID));
-        switch (await metascoreCanister.register(Principal.fromActor(this))) {
-            case (#err(e)) { #err(e); };
-            case (#ok()) {
-                metascore := ?metascoreID;
-                #ok();
-            };
-        };
+        await metascoreCanister.register(Principal.fromActor(this));
     };
 
-    public shared({caller}) func unregister() : async Result.Result<(), Text> {
+    public shared({caller}) func unregister(metascoreID : Principal) : async Result.Result<(), Text> {
         assert(caller == owner);
-        switch (metascore) {
-            case (null)  { #err("not registered yet..."); };
-            case (? metascoreID) {
-                let metascoreCanister : MPublic.MetascoreInterface = actor(Principal.toText(metascoreID));
-                await metascoreCanister.unregister(Principal.fromActor(this));
-            };
-        };
+        let metascoreCanister : MPublic.MetascoreInterface = actor(Principal.toText(metascoreID));
+        await metascoreCanister.unregister(Principal.fromActor(this));
     };
 
     // dfx canister --network=ic --no-wallet call dots sendNewScores "(vec { record { variant { stoic = principal \"g42pg-k3n7u-4sals-ufza4-34yrp-mmvkt-psecp-7do7x-snvq4-llwrj-2ae\" }; 15 } })"

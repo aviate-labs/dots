@@ -25,7 +25,7 @@ export const idlFactory = ({ IDL }) => {
     'register' : IDL.Func([IDL.Principal], [Result], []),
     'sendNewScores' : IDL.Func([IDL.Vec(Score)], [], []),
     'submitScores' : IDL.Func([IDL.Vec(Coordinate)], [Result], []),
-    'unregister' : IDL.Func([], [Result], []),
+    'unregister' : IDL.Func([IDL.Principal], [Result], []),
   });
   return Game;
 };

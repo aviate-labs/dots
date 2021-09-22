@@ -1,6 +1,5 @@
 import { StoicIdentity } from "ic-stoic-identity";
-import { HttpAgent } from "@dfinity/agent";
-import { createActor, idlFactory, canisterId, dots } from "../../declarations/dots";
+import { createActor, canisterId, dots } from "../../declarations/dots";
 
 let stoicIdentity = false;
 let gameActor = dots;
@@ -8,19 +7,15 @@ let gameActor = dots;
 let btn = document.getElementById("stoic");
 btn.addEventListener("click", async () => {
   StoicIdentity.load().then(async identity => {
-    if (identity === false) return;
-    identity = await StoicIdentity.connect();
+    if (identity === false) {
+      identity = await StoicIdentity.connect();
+    }
 
     stoicIdentity = identity;
     btn.innerText = identity.getPrincipal().toText();
     btn.classList.add("btnDisable");
 
-    gameActor = createActor(canisterId, {
-      agent: new HttpAgent({
-        identity,
-      }),
-      canisterId,
-    });
+    gameActor = createActor(canisterId, identity);
   })
 });
 
@@ -217,10 +212,11 @@ const sketch = (p) => {
       if (stoicIdentity !== false) {
         let previousScore = await gameActor.getScore();
         console.log(previousScore, fruit.length);
-        if (previousScore < fruit.length) {
+        if (previousScore < score) {
+          fruit.pop()
           console.log(await gameActor.submitScores(fruit));
-          fruit = [];
         };
+        fruit.length = 0;
       }
     }
   }

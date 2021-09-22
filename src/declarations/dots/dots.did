@@ -29,7 +29,7 @@ type Game =
    register: (principal) -> (Result);
    sendNewScores: (vec Score) -> ();
    submitScores: (vec Coordinate) -> (Result);
-   unregister: () -> (Result);
+   unregister: (principal) -> (Result);
  };
 type Coordinate = 
  record {
