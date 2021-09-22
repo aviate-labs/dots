@@ -22,10 +22,20 @@ type Metadata =
  };
 type Game = 
  service {
+   getFreshCoords: () -> (Coordinate) query;
+   getScore: () -> (nat) query;
    metascoreRegisterSelf: (RegisterCallback) -> ();
    metascoreScores: () -> (vec Score) query;
    register: (principal) -> (Result);
    sendNewScores: (vec Score) -> ();
+   submitScores: (vec Coordinate) -> (Result);
    unregister: () -> (Result);
  };
-service : () -> Game
+type Coordinate = 
+ record {
+   nat16;
+   nat16;
+   nat;
+   vec nat8;
+ };
+service : (nat32) -> Game

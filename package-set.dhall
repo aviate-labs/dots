@@ -6,6 +6,26 @@ let additions = [
   , repo = "https://github.com/metascore/metascore"
   , version = "v0.3.0"
   , dependencies = ["base"]
+  },
+  { name = "sha"
+  , repo = "https://github.com/aviate-labs/sha.mo"
+  , version = "v0.1.1"
+  , dependencies = ["base", "encoding"]
+  },
+  { name = "encoding"
+  , repo = "https://github.com/aviate-labs/encoding.mo"
+  , version = "v0.2.1"
+  , dependencies = ["base"]
+  },
+  { name = "rand"
+  , repo = "https://github.com/aviate-labs/rand.mo"
+  , version = "v0.1.0"
+  , dependencies = ["base", "io"]
+  },
+  { name = "io"
+  , repo = "https://github.com/aviate-labs/io.mo"
+  , version = "v0.2.0"
+  , dependencies = ["base"]
   }
 ] : List Package
 

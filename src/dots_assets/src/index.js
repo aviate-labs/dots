@@ -1,6 +1,9 @@
 import { StoicIdentity } from "ic-stoic-identity";
+import { HttpAgent } from "@dfinity/agent";
+import { createActor, idlFactory, canisterId, dots } from "../../declarations/dots";
 
 let stoicIdentity = false;
+let gameActor = dots;
 
 let btn = document.getElementById("stoic");
 btn.addEventListener("click", async () => {
@@ -11,6 +14,13 @@ btn.addEventListener("click", async () => {
     stoicIdentity = identity;
     btn.innerText = identity.getPrincipal().toText();
     btn.classList.add("btnDisable");
+
+    gameActor = createActor(canisterId, {
+      agent: new HttpAgent({
+        identity,
+      }),
+      canisterId,
+    });
   })
 });
 
@@ -20,6 +30,7 @@ const scoreElement = document.getElementById("score");
 const sketch = (p) => {
   let started  = false;
   let gameOver = false;
+  let errorOccured = false;
 
   let numSegments = 10;
   let direction = 'right';
@@ -32,19 +43,20 @@ const sketch = (p) => {
 
   let xFruit = 0;
   let yFruit = 0;
+  let fruit = [];
   let score = 0;
 
   let t = 0; // For animation.
 
   function init() {
-    p.background(0);
+    p.background(255);
 
     started  = false;
     gameOver = false;
 
     numSegments = 10;
     direction = 'right';
-
+    
     updateFruitCoordinates();
     score = 0;
     scoreElement.innerText = `Score = ${score}`;
@@ -65,6 +77,7 @@ const sketch = (p) => {
     p.frameRate(15);
     p.stroke(255);
     p.strokeWeight(10);
+
     updateFruitCoordinates();
 
     for (let i = 0; i < numSegments; i++) {
@@ -115,8 +128,15 @@ const sketch = (p) => {
   };
 
   p.draw = () => {
-    if (!started || gameOver) {
-      if (gameOver) {
+    if (errorOccured || !started || gameOver) {
+      if (errorOccured) {
+        p.background(0, 10);
+        p.noStroke();
+        p.fill(255);
+        p.textSize(50);
+        p.text(`Error!\nError!\nError!\n`, p.width/2, p.height/2-50);
+        p.stroke(255, 0, 0);
+      } else if (gameOver) {
         p.background(255, 10);
         p.noStroke();
         p.fill(255);
@@ -184,7 +204,7 @@ const sketch = (p) => {
     }
   }
 
-  function checkGameStatus() {
+  async function checkGameStatus() {
     if (
       xCor[xCor.length - 1] > p.width ||
       xCor[xCor.length - 1] < 0 ||
@@ -192,8 +212,16 @@ const sketch = (p) => {
       yCor[yCor.length - 1] < 0 ||
       checkSnakeCollision()
     ) {
-      p.background(0);
+      p.background(255);
       gameOver = true;
+      if (stoicIdentity !== false) {
+        let previousScore = await gameActor.getScore();
+        console.log(previousScore, fruit.length);
+        if (previousScore < fruit.length) {
+          console.log(await gameActor.submitScores(fruit));
+          fruit = [];
+        };
+      }
     }
   }
 
@@ -219,9 +247,14 @@ const sketch = (p) => {
     }
   }
 
-  function updateFruitCoordinates() {
-    xFruit = p.floor(p.random(10, (p.width - 100) / 10)) * 10;
-    yFruit = p.floor(p.random(10, (p.height - 100) / 10)) * 10;
+  async function updateFruitCoordinates() {
+    let coords = await gameActor.getFreshCoords().catch(e => {
+      errorOccured = true;
+      return;
+    });
+    xFruit = p.floor(Number(coords[0]) / 10) * 10;
+    yFruit = p.floor(Number(coords[1]) / 10) * 10;
+    fruit.push(coords);
   }
 };
 

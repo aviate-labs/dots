@@ -1,4 +1,4 @@
 {
-  dependencies = [ "base", "metascore" ],
+  dependencies = [ "base", "metascore", "sha", "rand", "encoding" ],
   compiler = None Text
 }
