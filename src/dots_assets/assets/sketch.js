@@ -1,4 +1,3 @@
-
 // the snake is divided into small segments, which are drawn and edited on each 'draw' call
 let numSegments = 10;
 let direction = 'right';
@@ -67,7 +66,6 @@ function updateSnakeCoordinates() {
 }
 
 function checkGameStatus() {
-    console.log("IOE")
     if (
         xCor[xCor.length - 1] > width ||
         xCor[xCor.length - 1] < 0 ||

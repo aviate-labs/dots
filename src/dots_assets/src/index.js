@@ -1,9 +1,26 @@
-import { dots } from "../../declarations/dots";
+import { StoicIdentity } from "ic-stoic-identity";
+import { Actor, HttpAgent } from "@dfinity/agent";
+import { idlFactory, canisterId } from "../../declarations/dots";
 
-document.getElementById("clickMeBtn").addEventListener("click", async () => {
-  const name = document.getElementById("name").value.toString();
-  // Interact with dots actor, calling the greet method
-  const greeting = await dots.greet(name);
+document.getElementById("stoic").addEventListener("click", async () => {
+  StoicIdentity.load().then(async identity => {
+    if (identity !== false) {
+      StoicIdentity.disconnect();
+      document.getElementById("stoic").innerText = "Stoic"
+      return;
+    }
+    identity = await StoicIdentity.connect();
+    
+    //Create an actor canister
+    const actor = Actor.createActor(idlFactory, {
+      agent: new HttpAgent({
+        identity,
+      }),
+      canisterId,
+    });
 
-  document.getElementById("greeting").innerText = greeting;
+    let _ = actor; // TODO
+
+    document.getElementById("stoic").innerText = identity.getPrincipal().toText();
+  })
 });
