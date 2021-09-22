@@ -1,33 +1,16 @@
 import { StoicIdentity } from "ic-stoic-identity";
-import { Actor, HttpAgent } from "@dfinity/agent";
-import { idlFactory, canisterId } from "../../declarations/dots";
 
 let stoicIdentity = false;
-let gameActor = null;
 
-document.getElementById("stoic").addEventListener("click", async () => {
+let btn = document.getElementById("stoic");
+btn.addEventListener("click", async () => {
   StoicIdentity.load().then(async identity => {
-    if (identity !== false) {
-      StoicIdentity.disconnect();
-      document.getElementById("stoic").innerText = "Login with Stoic";
-      stoicIdentity = false;
-      gameActor = null;
-      return;
-    }
+    if (identity === false) return;
     identity = await StoicIdentity.connect();
+
     stoicIdentity = identity;
-
-    //Create an actor canister
-    const actor = Actor.createActor(idlFactory, {
-      agent: new HttpAgent({
-        identity,
-      }),
-      canisterId,
-    });
-
-    gameActor = actor;
-
-    document.getElementById("stoic").innerText = identity.getPrincipal().toText();
+    btn.innerText = identity.getPrincipal().toText();
+    btn.classList.add("btnDisable");
   })
 });
 
@@ -35,6 +18,7 @@ const sketchContainer = document.getElementById("sketch-container");
 const scoreElement = document.getElementById("score");
 
 const sketch = (p) => {
+  let started  = false;
   let gameOver = false;
 
   let numSegments = 10;
@@ -51,9 +35,6 @@ const sketch = (p) => {
   let score = 0;
 
   let t = 0; // For animation.
-  let color = {
-    r: 0, b: 0, g: 0,
-  };
 
   p.setup = () => {
     const containerPos = sketchContainer.getBoundingClientRect();
@@ -98,7 +79,7 @@ const sketch = (p) => {
   };
 
   p.draw = () => {
-    if (gameOver || gameActor === null || stoicIdentity === false) {
+    if (!started || gameOver) {
       p.background(10, 10);
       if (gameOver) {
         p.stroke(220, 5, 15);
@@ -124,7 +105,7 @@ const sketch = (p) => {
       return;
     };
 
-    p.background(0);
+    p.background(0, 80);
     for (let i = 0; i < numSegments - 1; i++) {
       p.line(xCor[i], yCor[i], xCor[i + 1], yCor[i + 1]);
     };

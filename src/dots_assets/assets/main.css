@@ -9,11 +9,43 @@ body {
     align-items: center;
 }
 
+a {
+    text-decoration: underline;
+    color: black;
+}
+
+a:hover {
+    color: white;
+    background-color: black;
+}
+
 p {
     margin: 0;
     padding: 5px 10px;
     font-family: 'PT Mono', monospace;
     font-size: 1em;
+    max-width: 480px;
+}
+
+hr {
+    border: 1px solid black;
+    margin: 10px 0;
+    max-width: 500px;
+}
+
+.hr {
+    width: 500px;
+    height: 0.5em;
+    margin: 10px 0;
+    border-bottom: 2px solid black;
+    text-align: center;
+}
+
+.hr p {
+    background-color: white;
+    margin: 0;
+    padding: 0;
+    width: 100px;
 }
 
 button {
@@ -21,15 +53,26 @@ button {
     font-family: 'PT Mono', monospace;
     font-size: 1em;
 
+    overflow: hidden;
+    max-width: 500px;
+
     border: none;
     background-color: transparent;
     transition-duration: 0.4s;
-    cursor: grabbing;
+    cursor: pointer;
+}
+
+button.btnDisable {
+    cursor: default;
 }
 
 button:hover {
     color: black;
     background-color: white;
+}
+
+iframe {
+    display: none;
 }
 
 #sketch-container {
