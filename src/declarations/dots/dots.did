@@ -27,6 +27,7 @@ type Game =
    metascoreRegisterSelf: (RegisterCallback) -> ();
    metascoreScores: () -> (vec Score) query;
    register: (principal) -> (Result);
+   removeScore: (principal) -> () oneway;
    sendNewScores: (vec Score) -> ();
    submitScores: (vec Coordinate) -> (Result);
    unregister: (principal) -> (Result);

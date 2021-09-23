@@ -23,6 +23,7 @@ export const idlFactory = ({ IDL }) => {
     'metascoreRegisterSelf' : IDL.Func([RegisterCallback], [], []),
     'metascoreScores' : IDL.Func([], [IDL.Vec(Score)], ['query']),
     'register' : IDL.Func([IDL.Principal], [Result], []),
+    'removeScore' : IDL.Func([IDL.Principal], [], ['oneway']),
     'sendNewScores' : IDL.Func([IDL.Vec(Score)], [], []),
     'submitScores' : IDL.Func([IDL.Vec(Coordinate)], [Result], []),
     'unregister' : IDL.Func([IDL.Principal], [Result], []),
