@@ -6,6 +6,8 @@ import { idlFactory } from '../../declarations/dots/dots.did.js';
 let stoicIdentity = false;
 let gameActor = dots;
 
+const highscoreElement = document.getElementById("highscore");
+
 let btn = document.getElementById("stoic");
 btn.addEventListener("click", async () => {
   StoicIdentity.load().then(async identity => {
@@ -32,6 +34,9 @@ btn.addEventListener("click", async () => {
       canisterId,
       // ...options?.actorOptions,
     });
+
+    let highscore = await gameActor.getScore();
+    highscoreElement.innerText = `Highscore = ${highscore}`;
   })
 });
 
@@ -231,6 +236,7 @@ const sketch = (p) => {
         if (previousScore < score) {
           fruit.pop()
           console.log(await gameActor.submitScores(fruit));
+          highscoreElement.innerText = `Highscore = ${score}`;
         };
         fruit.length = 0;
       }
