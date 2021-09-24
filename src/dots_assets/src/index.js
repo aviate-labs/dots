@@ -46,6 +46,7 @@ const scoreElement = document.getElementById("score");
 const sketch = (p) => {
   let started  = false;
   let gameOver = false;
+  let gameOverMsg = "";
   let errorOccured = false;
 
   let numSegments = 10;
@@ -157,7 +158,7 @@ const sketch = (p) => {
         p.noStroke();
         p.fill(255);
         p.textSize(50);
-        p.text(`Game Over!\nScore = ${score}`, p.width/2, p.height/2);
+        p.text(`Game Over!\nScore = ${score}`, p.width/2, p.height/2-25);
         p.stroke(10);
       } else {
         p.background(10, 10);
@@ -183,6 +184,17 @@ const sketch = (p) => {
         }
       }
       t = t + 0.01;
+
+      if (errorOccured) {
+        p.textSize(20);
+        p.noStroke();
+        p.text(`Could not contact the canister...`, p.width/2, p.height-50);
+      };
+      if (gameOver) {
+        p.textSize(20);
+        p.noStroke();
+        p.text(gameOverMsg, p.width/2, p.height-50);
+      };
       return;
     };
 
@@ -221,15 +233,21 @@ const sketch = (p) => {
   }
 
   async function checkGameStatus() {
+    let collided = checkSnakeCollision();
     if (
       xCor[xCor.length - 1] > p.width ||
       xCor[xCor.length - 1] < 0 ||
       yCor[yCor.length - 1] > p.height ||
       yCor[yCor.length - 1] < 0 ||
-      checkSnakeCollision()
+      collided
     ) {
       p.background(255);
       gameOver = true;
+      if (collided) {
+        gameOverMsg = "Don't eat your own tail..."
+      } else {
+        gameOverMsg = "You smashed against the wall!"
+      }
       if (stoicIdentity !== false) {
         let previousScore = await gameActor.getScore();
         console.log(previousScore, fruit.length);
