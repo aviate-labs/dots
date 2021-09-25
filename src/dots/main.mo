@@ -89,15 +89,8 @@ shared ({caller = owner}) actor class Game(e : Nat32) : async MPublic.GameInterf
         };
         let playerId = #stoic(caller);
         let score = coordinates.size();
-        switch (metascore) {
-            case (null)  { #err("contact quint, something went wrong...") };
-            case (? mID) {
-                let metascore : MPublic.MetascoreInterface = actor(Principal.toText(mID));
-                await metascore.scoreUpdate([(playerId, score)]);
-                state.put(playerId, score);
-                #ok();
-            };
-        };   
+        state.put(playerId, score);
+        #ok();
     };
 
     // Returns the score of the caller. If the caller has no score, it returns 0.
