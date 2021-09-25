@@ -1,5 +1,11 @@
 # DOTS ...
 
+## Deploying Backend Canister
+
+```shell
+dfx deploy --network=ic dots --argument {entropy}
+```
+
 ## Create a Score Dump
 
 ```shell

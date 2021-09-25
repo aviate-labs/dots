@@ -28,11 +28,13 @@ shared ({caller = owner}) actor class Game(e : Nat32) : async MPublic.GameInterf
         [Nat8], // Hash
     );
     
+    // Returns a new set of coordinates, with some random entropy.
     public query func getFreshCoords() : async Coordinate {
         let h = SHA256.Hash(false);
         let t = Nat64.fromNat(Int.abs(Time.now()));
 
-        // Just doing random stuff at this point.
+        // Just doing random stuff at this point. There are many ways to do this,
+        // this is not safe by any means, very easy to influence.
         let t8 = Binary.BigEndian.fromNat64(t);
         let xPos = Binary.BigEndian.toNat16([t8[7], t8[6]]) % 500;
         let yPos = Binary.BigEndian.toNat16([t8[6], t8[5]]) % 500;
@@ -43,6 +45,8 @@ shared ({caller = owner}) actor class Game(e : Nat32) : async MPublic.GameInterf
         (xPos, yPos, Nat64.toNat(t), h.sum([]));
     };
 
+    // Checks whether the given coordinate was created by this canister, by
+    // checking the hash.
     private func isValidCoordinate((x, y, t, hash) : Coordinate) : Bool {
         let h = SHA256.Hash(false);
         h.write(Binary.BigEndian.fromNat32(entropy));
@@ -68,10 +72,13 @@ shared ({caller = owner}) actor class Game(e : Nat32) : async MPublic.GameInterf
         scores := [];
     };
 
+    // Metascore endpoint, which returns all the scores.
     public query func metascoreScores() : async [MPublic.Score] {
         Iter.toArray(state.entries());
     };
 
+    // Front-end endpoint to submit scores. Checks whether the scores are valid
+    // and whether they are chronological, which should be the case.
     public shared({caller}) func submitScores(coordinates : [Coordinate]) : async Result.Result<(), Text> {
         var previousTime = 0;
         for (c in coordinates.vals()) {
@@ -93,6 +100,7 @@ shared ({caller = owner}) actor class Game(e : Nat32) : async MPublic.GameInterf
         };   
     };
 
+    // Returns the score of the caller. If the caller has no score, it returns 0.
     public query({caller}) func getScore() : async Nat {
         switch (state.get(#stoic(caller))) {
             case (null) { 0; };
@@ -100,6 +108,7 @@ shared ({caller = owner}) actor class Game(e : Nat32) : async MPublic.GameInterf
         };
     };
 
+    // Metascore endpoint to register itself.
     public shared({caller}) func metascoreRegisterSelf(callback : MPublic.RegisterCallback) : async () {
         switch (metascore) {
             case (null)  { assert(false);         };
@@ -113,6 +122,11 @@ shared ({caller = owner}) actor class Game(e : Nat32) : async MPublic.GameInterf
         });
     };
 
+    // ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+    // | Admin zone. 🚫                                                        |
+    // ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+
+    // Allows the owner to register DOTS in Metascore.
     // dfx canister --network=ic --no-wallet call dots register "(principal \"tzvxm-jqaaa-aaaaj-qabga-cai\")"
     public shared({caller}) func register(metascoreID : Principal) : async Result.Result<(), Text> {
         assert(caller == owner);
@@ -121,17 +135,23 @@ shared ({caller = owner}) actor class Game(e : Nat32) : async MPublic.GameInterf
         await metascoreCanister.register(Principal.fromActor(this));
     };
 
+    // Allows the owner to unregister DOTS in Metascore.
+    // dfx canister --network=ic --no-wallet call dots unregister "(principal \"tzvxm-jqaaa-aaaaj-qabga-cai\")"
     public shared({caller}) func unregister(metascoreID : Principal) : async Result.Result<(), Text> {
         assert(caller == owner);
+        metascore := null;
         let metascoreCanister : MPublic.MetascoreInterface = actor(Principal.toText(metascoreID));
         await metascoreCanister.unregister(Principal.fromActor(this));
     };
 
+    // Removes a score from the scoreboard.
+    // dfx canister --network=ic --no-wallet call dots removeScore "(principal \"g42pg-k3n7u-4sals-ufza4-34yrp-mmvkt-psecp-7do7x-snvq4-llwrj-2ae\")"
     public shared({caller}) func removeScore(p : Principal) : () {
         assert(caller == owner);
         state.delete(#stoic(p));
     };
 
+    // Allows the owner to add score.
     // dfx canister --network=ic --no-wallet call dots sendNewScores "(vec { record { variant { stoic = principal \"g42pg-k3n7u-4sals-ufza4-34yrp-mmvkt-psecp-7do7x-snvq4-llwrj-2ae\" }; 15 } })"
     public shared({caller}) func sendNewScores(scores : [MPublic.Score]) : async () {
         assert(caller == owner);

@@ -108,7 +108,7 @@ const sketch = (p) => {
 
   p.keyPressed = (keydown) => {
     switch (keydown.keyCode) {
-      case 13:
+      case 13: // ENTER
         if (!started) {
           started = true;
           p.background(0);
@@ -117,25 +117,25 @@ const sketch = (p) => {
           init();
         }
         break;
-      case 65:
+      case 65: // LEFT
       case 37:
         if (direction !== 'right') {
           direction = 'left';
         }
         break;
-      case 68:
+      case 68: // RIGHT
       case 39:
         if (direction !== 'left') {
           direction = 'right';
         }
         break;
-      case 87:
+      case 87: // UP
       case 38:
         if (direction !== 'down') {
           direction = 'up';
         }
         break;
-      case 83:
+      case 83: // DOWN
       case 40:
         if (direction !== 'up') {
           direction = 'down';
@@ -145,6 +145,7 @@ const sketch = (p) => {
   };
 
   p.draw = () => {
+    // Error/GameOver animated screen.
     if (errorOccured || !started || gameOver) {
       if (errorOccured) {
         p.background(0, 10);
@@ -168,19 +169,17 @@ const sketch = (p) => {
         p.text("Press 'Enter' to Start", p.width/2, p.height/2);
       }
       
+      const xAngle = p.map(0, 0, p.width, -4 * p.PI, 4 * p.PI, true);
+      const yAngle = p.map(0, 0, p.height, -4 * p.PI, 4 * p.PI, true);
       for (let x = 0; x <= p.width + 30; x = x + 30) {
         for (let y = 0; y <= p.height + 30; y = y + 30) {
-          // starting point of each circle depends on mouse position
-          const xAngle = p.map(0, 0, p.width, -4 * p.PI, 4 * p.PI, true);
-          const yAngle = p.map(0, 0, p.height, -4 * p.PI, 4 * p.PI, true);
-          // and also varies based on the particle's location
+          // Varies based on the particle's location
           const angle = xAngle * (x / p.width) + yAngle * (y / p.height);
 
-          // each particle moves in a circle
+          // Each particle moves in a circle
           const myX = x + 20 * p.cos(2 * p.PI * t + angle);
           const myY = y + 20 * p.sin(2 * p.PI * t + angle);
-
-          p.ellipse(myX, myY, 10); // draw particle
+          p.ellipse(myX, myY, 10);
         }
       }
       t = t + 0.01;
