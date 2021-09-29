@@ -29,17 +29,17 @@ p {
     padding: 5px 10px;
     font-family: 'PT Mono', monospace;
     font-size: 1em;
-    max-width: 480px;
+    max-width: 580px;
 }
 
 hr {
     border: 1px solid black;
     margin: 10px 0;
-    max-width: 500px;
+    max-width: 600px;
 }
 
 .hr {
-    width: 500px;
+    width: 600px;
     height: 0.5em;
     margin: 10px 0;
     border-bottom: 2px solid black;
@@ -53,35 +53,12 @@ hr {
     width: 100px;
 }
 
-button {
-    padding: 5px 10px;
-    font-family: 'PT Mono', monospace;
-    font-size: 1em;
-
-    overflow: hidden;
-    max-width: 500px;
-
-    border: none;
-    background-color: transparent;
-    transition-duration: 0.4s;
-    cursor: pointer;
-}
-
-button.btnDisable {
-    cursor: default;
-}
-
-button:hover {
-    color: black;
-    background-color: white;
-}
-
 iframe {
     display: none;
 }
 
 #sketch-container {
     overflow: hidden;
-    width: 500px;
-    height: 500px;
+    width: 600px;
+    height: 335px;
 }
