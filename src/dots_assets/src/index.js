@@ -18,9 +18,6 @@ const sketch = (p) => {
   p.draw = () => {
     p.background(10, 10);
     p.stroke(255);
-    p.fill(0);
-    p.textSize(30);
-    p.text("Any TEXT here.", p.width/2, p.height/2);
     
     const xAngle = p.map(0, 0, p.width, -4 * p.PI, 4 * p.PI, true);
     const yAngle = p.map(0, 0, p.height, -4 * p.PI, 4 * p.PI, true);
@@ -35,18 +32,12 @@ const sketch = (p) => {
         p.ellipse(myX, myY, 10);
       }
     }
+
+    p.fill(0);
+    p.textSize(50);
+    p.text("Some text...", p.width/2, p.height/2 + 20);
     t = t + 0.01;
   };
-
-  function checkSnakeCollision() {
-    const snakeHeadX = xCor[xCor.length - 1];
-    const snakeHeadY = yCor[yCor.length - 1];
-    for (let i = 0; i < xCor.length - 1; i++) {
-      if (xCor[i] === snakeHeadX && yCor[i] === snakeHeadY) {
-        return true;
-      }
-    }
-  }
 };
 
 new p5(sketch, sketchContainer);
